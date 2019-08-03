@@ -363,6 +363,8 @@ var
   LSystemInfo: SYSTEM_INFO;
 begin
   // returns total number of processors available to system including logical hyperthreaded processors
+  LProcessAffinityMask := 0;
+  LSystemAffinityMask := 0;
   if GetProcessAffinityMask(GetCurrentProcess, LProcessAffinityMask,
     LSystemAffinityMask) then
   begin
@@ -379,6 +381,7 @@ begin
   else
   begin
     // can't get the affinity mask so we just report the total number of processors
+    LSystemInfo := Default(SYSTEM_INFO);
     GetSystemInfo(LSystemInfo);
     Result := LSystemInfo.dwNumberOfProcessors;
   end;
