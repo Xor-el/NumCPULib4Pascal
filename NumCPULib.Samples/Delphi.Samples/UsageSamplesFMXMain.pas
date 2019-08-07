@@ -10,8 +10,8 @@ uses
 
 type
   TForm1 = class(TForm)
-    LogicalProcessorCount: TButton;
-    procedure LogicalProcessorCountClick(Sender: TObject);
+    GetCPUCount: TButton;
+    procedure GetCPUCountClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -25,10 +25,13 @@ implementation
 
 {$R *.fmx}
 
-procedure TForm1.LogicalProcessorCountClick(Sender: TObject);
+procedure TForm1.GetCPUCountClick(Sender: TObject);
 begin
   ShowMessage(Format('Logical CPU Count is %d',
     [TNumCPULib.GetLogicalCPUCount()]));
+
+  ShowMessage(Format('Physical CPU Count is %d',
+    [TNumCPULib.GetPhysicalCPUCount()]));
 end;
 
 end.
