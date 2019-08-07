@@ -14,9 +14,9 @@ uses
 var
   lcc, pcc: Int32;
 begin
-// count logical cpus
+// count logical cpus (aka logical processors)
  lcc := TNumCPULib.GetLogicalCPUCount();
-// count physical cpus
+// count physical cpus (aka cores)
  pcc := TNumCPULib.GetPhysicalCPUCount();
 end;
 ```
