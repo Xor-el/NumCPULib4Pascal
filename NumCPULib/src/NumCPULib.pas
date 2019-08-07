@@ -1064,6 +1064,7 @@ begin
     // reduce to used size
     System.SetLength(LLogicalProcessors, LLogicalProcessorsIdx);
     PhysicalProcessorsDetails := TStringList.Create();
+    PhysicalProcessorsDetails.Sorted := True;
     PhysicalProcessorsDetails.Duplicates := dupIgnore;
     try
       for LJIdx := 0 to System.Pred(System.Length(LLogicalProcessors)) do
