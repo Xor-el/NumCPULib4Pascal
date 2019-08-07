@@ -1,7 +1,7 @@
 # NumCPULib4Pascal
 
 
-Count the number of CPUs on the current machine.
+Count the number of CPUs (Logical and Physical) on the current machine.
 
 ## Usage
 
@@ -12,9 +12,11 @@ uses
   NumCPULib;
 
 var
-  num: Int32;
+  lcc, pcc: Int32;
 begin
-// count logical cores this process could try to use
- num := TNumCPULib.GetLogicalCPUCount();
+// count logical cpus
+ lcc := TNumCPULib.GetLogicalCPUCount();
+// count physical cpus
+ pcc := TNumCPULib.GetPhysicalCPUCount();
 end;
 ```
