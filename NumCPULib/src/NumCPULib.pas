@@ -85,6 +85,10 @@ unit NumCPULib;
    {$DEFINE NUMCPULIB_HAS_SYSCONF}
 {$IFEND}
 
+{$IF DEFINED(NUMCPULIB_LINUX) OR DEFINED(NUMCPULIB_SOLARIS)}
+   {$DEFINE NUMCPULIB_WILL_PARSE_DATA}
+{$IFEND}
+
 {$ENDIF FPC}
 
 (* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& *)
@@ -166,6 +170,10 @@ unit NumCPULib;
    {$IFEND}
 {$IFEND}
 
+{$IFDEF NUMCPULIB_LINUX}
+   {$DEFINE NUMCPULIB_WILL_PARSE_DATA}
+{$ENDIF}
+
 {$ENDIF DELPHI}
 
 interface
@@ -203,15 +211,13 @@ uses
 {$ENDIF} // ENDIF NUMCPULIB_MACOS
 {$ENDIF}   // ENDIF NUMCPULIB_APPLE
   // ================================================================//
+{$IFDEF NUMCPULIB_WILL_PARSE_DATA}
 {$IFDEF NUMCPULIB_SOLARIS}
   Process,
-  Classes,
 {$ENDIF} // ENDIF NUMCPULIB_SOLARIS
-  // ================================================================//
-{$IFDEF NUMCPULIB_LINUX}
   Classes,
   StrUtils,
-{$ENDIF} // ENDIF NUMCPULIB_LINUX
+{$ENDIF} // ENDIF NUMCPULIB_WILL_PARSE_DATA
 
   // ================================================================//
   SysUtils;
@@ -412,20 +418,10 @@ type
   class function GetPhysicalCPUCountApple(): Int32; static;
 {$ENDIF}
   // ================================================================//
-{$IFDEF NUMCPULIB_LINUX}
+{$IFDEF NUMCPULIB_WILL_PARSE_DATA}
 
   type
     TNumCPULibStringArray = array of String;
-
-  type
-    TLogicalProcessor = record
-    private
-    var
-      ProcessorNumber, PhysicalProcessorNumber, PhysicalPackageNumber: Int32;
-    public
-      class function Create(AProcessorNumber, APhysicalProcessorNumber,
-        APhysicalPackageNumber: Int32): TLogicalProcessor; static;
-    end;
 
   class function SplitString(const AInputString: string; ADelimiter: Char)
     : TNumCPULibStringArray; static;
@@ -436,6 +432,19 @@ type
 
   class function BeginsWith(const AInputString, ASubString: string;
     AIgnoreCase: Boolean; AOffset: Int32 = 1): Boolean; static;
+{$ENDIF}
+  // ================================================================//
+{$IFDEF NUMCPULIB_LINUX}
+
+  type
+    TLogicalProcessor = record
+    private
+    var
+      ProcessorNumber, PhysicalProcessorNumber, PhysicalPackageNumber: Int32;
+    public
+      class function Create(AProcessorNumber, APhysicalProcessorNumber,
+        APhysicalPackageNumber: Int32): TLogicalProcessor; static;
+    end;
 
   class procedure ReadFileContents(const AFilePath: String;
     var AOutputParameters: TStringList); static;
@@ -855,16 +864,8 @@ begin
 end;
 {$ENDIF}
 // ================================================================//
-{$IFDEF NUMCPULIB_LINUX}
 
-class function TNumCPULib.TLogicalProcessor.Create(AProcessorNumber,
-  APhysicalProcessorNumber, APhysicalPackageNumber: Int32): TLogicalProcessor;
-begin
-  Result := Default (TLogicalProcessor);
-  Result.ProcessorNumber := AProcessorNumber;
-  Result.PhysicalProcessorNumber := APhysicalProcessorNumber;
-  Result.PhysicalPackageNumber := APhysicalPackageNumber;
-end;
+{$IFDEF NUMCPULIB_WILL_PARSE_DATA}
 
 class function TNumCPULib.SplitString(const AInputString: string;
   ADelimiter: Char): TNumCPULibStringArray;
@@ -960,6 +961,19 @@ begin
       Result := StrLComp(LPtrSubString, LPtrInputString, LIdx) = 0
     end;
   end;
+end;
+{$ENDIF}
+// ================================================================//
+
+{$IFDEF NUMCPULIB_LINUX}
+
+class function TNumCPULib.TLogicalProcessor.Create(AProcessorNumber,
+  APhysicalProcessorNumber, APhysicalPackageNumber: Int32): TLogicalProcessor;
+begin
+  Result := Default (TLogicalProcessor);
+  Result.ProcessorNumber := AProcessorNumber;
+  Result.PhysicalProcessorNumber := APhysicalProcessorNumber;
+  Result.PhysicalPackageNumber := APhysicalPackageNumber;
 end;
 
 class procedure TNumCPULib.ReadFileContents(const AFilePath: String;
@@ -1140,13 +1154,17 @@ end;
 
 class function TNumCPULib.GetPhysicalCPUCountSolaris(): Int32;
 var
-  LInputParameters, LOuputParameters: TStringList;
-  LIdx: Int32;
+  LInputParameters, LOuputParameters, LCoreChipIDs: TStringList;
+  LLineOutputInfo: String;
+  LIdx, LChipId, LCoreId: Int32;
 begin
   Result := 0;
 
+  LCoreChipIDs := TStringList.Create();
   LInputParameters := TStringList.Create();
   LOuputParameters := TStringList.Create();
+  LCoreChipIDs.Sorted := True;
+  LCoreChipIDs.Duplicates := dupIgnore;
   LOuputParameters.Sorted := True;
   LOuputParameters.Duplicates := dupIgnore;
   try
@@ -1158,11 +1176,20 @@ begin
 
     for LIdx := 0 to System.Pred(LOuputParameters.Count) do
     begin
-      if System.Pos('chip_id', LOuputParameters[LIdx]) > 0 then
+      LLineOutputInfo := LOuputParameters[LIdx];
+      if BeginsWith(LLineOutputInfo, 'chip_id', False) then
       begin
-        System.Inc(Result);
+        LChipId := ParseLastInt32(LLineOutputInfo, 0);
+      end
+      else if (BeginsWith(LLineOutputInfo, 'core_id', False)) then
+      begin
+        LCoreId := ParseLastInt32(LLineOutputInfo, 0);
       end;
+
+      LCoreChipIDs.Add(Format('%d:%d', [LCoreId, LChipId]));
     end;
+
+    Result := LCoreChipIDs.Count;
 
     // fallback if above method fails, note: the method below only works only for Solaris 10 and above
     if Result < 1 then
@@ -1178,6 +1205,7 @@ begin
     end;
 
   finally
+    LCoreChipIDs.Free;
     LInputParameters.Free;
     LOuputParameters.Free;
   end;
