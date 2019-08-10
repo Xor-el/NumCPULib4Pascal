@@ -185,7 +185,7 @@ uses
   // ================================================================//
 {$IFDEF NUMCPULIB_HAS_SYSCONF}
 {$IFDEF FPC}
-  ctypes,
+  unixtype,
 {$ELSE}
   Posix.Unistd,
 {$ENDIF}   // ENDIF FPC
@@ -193,7 +193,6 @@ uses
   // ================================================================//
 {$IFDEF NUMCPULIB_HAS_SYSCTL}
 {$IFDEF FPC}
-  unixtype,
   sysctl,
 {$ELSE}
   Posix.SysTypes,
@@ -221,15 +220,6 @@ uses
 
   // ================================================================//
   SysUtils;
-
-resourcestring
-  SErrorOccuredGettingLogicalCPUCount =
-    'An Error Occured while getting the Logical CPU Count.';
-  SErrorOccuredGettingPhysicalCPUCount =
-    'An Error Occured while getting the Physical CPU Count.';
-
-type
-  ENumCPULibException = class(Exception);
 
 type
   /// <summary>
@@ -260,9 +250,9 @@ type
 {$IFDEF NUMCPULIB_HAS_SYSCTL}
 {$IFDEF NUMCPULIB_APPLE}
     class function GetCPUCountUsingSysCtlByName(const AName: String)
-      : Int32; static;
+      : UInt32; static;
 {$ENDIF}
-    class function GetLogicalCPUCountUsingSysCtl(): Int32; static;
+    class function GetLogicalCPUCountUsingSysCtl(): UInt32; static;
 {$ENDIF}
     // ================================================================//
 {$IFDEF NUMCPULIB_MSWINDOWS}
@@ -390,14 +380,14 @@ type
 
   type
     TProcessorInformation = record
-      LogicalProcessorCount: Int32;
-      ProcessorCoreCount: Int32;
+      LogicalProcessorCount: UInt32;
+      ProcessorCoreCount: UInt32;
     end;
 
   type
     TProcessorInformationEx = record
-      LogicalProcessorCount: Int32;
-      ProcessorCoreCount: Int32;
+      LogicalProcessorCount: UInt32;
+      ProcessorCoreCount: UInt32;
     end;
 
     // ================================================================//
@@ -405,17 +395,17 @@ type
     const AProcedureName: String; var AFunctionFound: Boolean): Pointer; static;
   class function IsGetLogicalProcessorInformationAvailable(): Boolean; static;
   class function IsGetLogicalProcessorInformationExAvailable(): Boolean; static;
-  class function CountSetBits(ABitMask: NativeUInt): Int32; static;
+  class function CountSetBits(ABitMask: NativeUInt): UInt32; static;
   class function GetProcessorInfo(): TProcessorInformation; static;
   class function GetProcessorInfoEx(): TProcessorInformationEx; static;
 
-  class function GetLogicalCPUCountWindows(): Int32; static;
-  class function GetPhysicalCPUCountWindows(): Int32; static;
+  class function GetLogicalCPUCountWindows(): UInt32; static;
+  class function GetPhysicalCPUCountWindows(): UInt32; static;
 {$ENDIF}
   // ================================================================//
 {$IFDEF NUMCPULIB_APPLE}
-  class function GetLogicalCPUCountApple(): Int32; static;
-  class function GetPhysicalCPUCountApple(): Int32; static;
+  class function GetLogicalCPUCountApple(): UInt32; static;
+  class function GetPhysicalCPUCountApple(): UInt32; static;
 {$ENDIF}
   // ================================================================//
 {$IFDEF NUMCPULIB_WILL_PARSE_DATA}
@@ -423,7 +413,7 @@ type
   type
     TNumCPULibStringArray = array of String;
 
-  class function SplitString(const AInputString: string; ADelimiter: Char)
+  class function SplitString(const AInputString: String; ADelimiter: Char)
     : TNumCPULibStringArray; static;
 
   class function ParseLastString(const AInputString: String): String; static;
@@ -440,27 +430,27 @@ type
     TLogicalProcessor = record
     private
     var
-      ProcessorNumber, PhysicalProcessorNumber, PhysicalPackageNumber: Int32;
+      ProcessorNumber, PhysicalProcessorNumber, PhysicalPackageNumber: UInt32;
     public
       class function Create(AProcessorNumber, APhysicalProcessorNumber,
-        APhysicalPackageNumber: Int32): TLogicalProcessor; static;
+        APhysicalPackageNumber: UInt32): TLogicalProcessor; static;
     end;
 
   class procedure ReadFileContents(const AFilePath: String;
     var AOutputParameters: TStringList); static;
-  class function GetLogicalCPUCountLinux(): Int32; static;
-  class function GetPhysicalCPUCountLinux(): Int32; static;
+  class function GetLogicalCPUCountLinux(): UInt32; static;
+  class function GetPhysicalCPUCountLinux(): UInt32; static;
 {$ENDIF}
   // ================================================================//
 {$IFDEF NUMCPULIB_SOLARIS}
   class procedure ExecuteAndParseProcessOutput(const ACallingProcess: String;
     AInputParameters: TStringList; var AOutputParameters: TStringList);
-  class function GetLogicalCPUCountSolaris(): Int32; static;
-  class function GetPhysicalCPUCountSolaris(): Int32; static;
+  class function GetLogicalCPUCountSolaris(): UInt32; static;
+  class function GetPhysicalCPUCountSolaris(): UInt32; static;
 {$ENDIF}
   // ================================================================//
 {$IFDEF NUMCPULIB_GENERIC_BSD}
-  class function GetLogicalCPUCountGenericBSD(): Int32; static;
+  class function GetLogicalCPUCountGenericBSD(): UInt32; static;
 {$ENDIF}
   // ================================================================//
 
@@ -473,12 +463,12 @@ type
     /// This function will get the number of logical cores. Sometimes this is
     /// different from the number of physical cores.
     /// </summary>
-    class function GetLogicalCPUCount(): Int32; static;
+    class function GetLogicalCPUCount(): UInt32; static;
 
     /// <summary>
     /// This function will get the number of physical cores.
     /// </summary>
-    class function GetPhysicalCPUCount(): Int32; static;
+    class function GetPhysicalCPUCount(): UInt32; static;
   end;
 
 {$IFDEF NUMCPULIB_HAS_SYSCONF}
@@ -572,7 +562,7 @@ end;
 {$IFDEF NUMCPULIB_APPLE}
 
 class function TNumCPULib.GetCPUCountUsingSysCtlByName
-  (const AName: String): Int32;
+  (const AName: String): UInt32;
 var
   LLen: size_t;
 begin
@@ -585,33 +575,31 @@ begin
 end;
 {$ENDIF}
 
-class function TNumCPULib.GetLogicalCPUCountUsingSysCtl(): Int32;
+class function TNumCPULib.GetLogicalCPUCountUsingSysCtl(): UInt32;
 var
   LMib: array [0 .. 1] of Int32;
   LLen: size_t;
-  LT: Int32;
 begin
   LMib[0] := CTL_HW;
   LMib[1] := HW_NCPU;
-  LLen := System.SizeOf(LT);
+  LLen := System.SizeOf(Result);
 {$IFDEF FPC}
 {$IF DEFINED(VER3_0_0) OR DEFINED(VER3_0_2)}
-  fpsysctl(PChar(@LMib), 2, @LT, @LLen, nil, 0);
+  fpsysctl(PChar(@LMib), 2, @Result, @LLen, nil, 0);
 {$ELSE}
-  fpsysctl(@LMib, 2, @LT, @LLen, nil, 0);
+  fpsysctl(@LMib, 2, @Result, @LLen, nil, 0);
 {$IFEND}
 {$ELSE}
-  sysctl(@LMib, 2, @LT, @LLen, nil, 0);
+  sysctl(@LMib, 2, @Result, @LLen, nil, 0);
 {$ENDIF}
-  Result := LT;
 end;
 {$ENDIF}
 // ================================================================//
 {$IFDEF NUMCPULIB_MSWINDOWS}
 
-class function TNumCPULib.CountSetBits(ABitMask: NativeUInt): Int32;
+class function TNumCPULib.CountSetBits(ABitMask: NativeUInt): UInt32;
 var
-  LShift, LIdx: Int32;
+  LShift, LIdx: UInt32;
   LBitTest: NativeUInt;
 begin
   LShift := (System.SizeOf(NativeUInt) * 8) - 1;
@@ -726,7 +714,7 @@ begin
   end;
 end;
 
-class function TNumCPULib.GetLogicalCPUCountWindows(): Int32;
+class function TNumCPULib.GetLogicalCPUCountWindows(): UInt32;
 var
   LIdx: Int32;
   LProcessAffinityMask, LSystemAffinityMask: DWORD_PTR;
@@ -773,12 +761,12 @@ begin
   end;
 end;
 
-class function TNumCPULib.GetPhysicalCPUCountWindows(): Int32;
+class function TNumCPULib.GetPhysicalCPUCountWindows(): UInt32;
 var
   LProcInfo: TProcessorInformation;
   LProcInfoEx: TProcessorInformationEx;
 begin
-  Result := -1;
+  Result := 0;
   if IsGetLogicalProcessorInformationExAvailable then
   begin
     LProcInfoEx := GetProcessorInfoEx;
@@ -835,30 +823,36 @@ end;
 // ================================================================//
 {$IFDEF NUMCPULIB_APPLE}
 
-class function TNumCPULib.GetLogicalCPUCountApple(): Int32;
+class function TNumCPULib.GetLogicalCPUCountApple(): UInt32;
+var
+  LTempRes: Int32;
 begin
 {$IF DEFINED(NUMCPULIB_MACOS)}
   // >= (Mac OS X 10.4+)
   if NSAppKitVersionNumber >= 824 then // NSAppKitVersionNumber10_4
   begin
-    Result := sysconf(GetAppropriateSysConfNumber());
+    LTempRes := sysconf(GetAppropriateSysConfNumber());
   end
   else
   begin
     // fallback for when sysconf API is not available
-    Result := GetLogicalCPUCountUsingSysCtl();
+    LTempRes := Int32(GetLogicalCPUCountUsingSysCtl());
   end;
 {$ELSE}
-  Result := sysconf(GetAppropriateSysConfNumber());
+  LTempRes := sysconf(GetAppropriateSysConfNumber());
 {$IFEND}
   // final fallback if all above fails
-  if Result < 1 then
+  if LTempRes < 1 then
   begin
     Result := GetCPUCountUsingSysCtlByName('hw.logicalcpu');
+  end
+  else
+  begin
+    Result := UInt32(LTempRes);
   end;
 end;
 
-class function TNumCPULib.GetPhysicalCPUCountApple(): Int32;
+class function TNumCPULib.GetPhysicalCPUCountApple(): UInt32;
 begin
   Result := GetCPUCountUsingSysCtlByName('hw.physicalcpu');
 end;
@@ -867,7 +861,7 @@ end;
 
 {$IFDEF NUMCPULIB_WILL_PARSE_DATA}
 
-class function TNumCPULib.SplitString(const AInputString: string;
+class function TNumCPULib.SplitString(const AInputString: String;
   ADelimiter: Char): TNumCPULibStringArray;
 var
   LPosStart, LPosDel, LSplitPoints, LIdx, LLowIndex, LHighIndex, LLength: Int32;
@@ -968,7 +962,7 @@ end;
 {$IFDEF NUMCPULIB_LINUX}
 
 class function TNumCPULib.TLogicalProcessor.Create(AProcessorNumber,
-  APhysicalProcessorNumber, APhysicalPackageNumber: Int32): TLogicalProcessor;
+  APhysicalProcessorNumber, APhysicalPackageNumber: UInt32): TLogicalProcessor;
 begin
   Result := Default (TLogicalProcessor);
   Result.ProcessorNumber := AProcessorNumber;
@@ -1015,16 +1009,16 @@ begin
   end;
 end;
 
-class function TNumCPULib.GetLogicalCPUCountLinux(): Int32;
+class function TNumCPULib.GetLogicalCPUCountLinux(): UInt32;
 begin
-  Result := sysconf(GetAppropriateSysConfNumber());
+  Result := UInt32(sysconf(GetAppropriateSysConfNumber()));
 end;
 
-class function TNumCPULib.GetPhysicalCPUCountLinux(): Int32;
+class function TNumCPULib.GetPhysicalCPUCountLinux(): UInt32;
 var
-  LProcCpuInfos, PhysicalProcessorsDetails: TStringList;
-  LCurrentProcessor, LCurrentCore, LCurrentPackage, LIdx, LJIdx,
-    LLogicalProcessorsIdx: Int32;
+  LProcCpuInfos, LPhysicalProcessorsDetails: TStringList;
+  LIdx, LJIdx, LLogicalProcessorsIdx: Int32;
+  LCurrentProcessor, LCurrentCore, LCurrentPackage: UInt32;
   LFirst: Boolean;
   LLogicalProcessors: array of TLogicalProcessor;
   LogicalProcessor: TLogicalProcessor;
@@ -1057,17 +1051,17 @@ begin
         begin
           LFirst := False;
         end;
-        LCurrentProcessor := ParseLastInt32(LLineProcCpuInfo, 0);
+        LCurrentProcessor := UInt32(ParseLastInt32(LLineProcCpuInfo, 0));
       end
       else if (BeginsWith(LLineProcCpuInfo, 'core id', False) or
         BeginsWith(LLineProcCpuInfo, 'cpu number', False)) then
       begin
         // Count unique combinations of core id and physical id.
-        LCurrentCore := ParseLastInt32(LLineProcCpuInfo, 0);
+        LCurrentCore := UInt32(ParseLastInt32(LLineProcCpuInfo, 0));
       end
       else if (BeginsWith(LLineProcCpuInfo, 'physical id', False)) then
       begin
-        LCurrentPackage := ParseLastInt32(LLineProcCpuInfo, 0);
+        LCurrentPackage := UInt32(ParseLastInt32(LLineProcCpuInfo, 0));
       end;
     end;
 
@@ -1077,21 +1071,21 @@ begin
     System.Inc(LLogicalProcessorsIdx);
     // reduce to used size
     System.SetLength(LLogicalProcessors, LLogicalProcessorsIdx);
-    PhysicalProcessorsDetails := TStringList.Create();
-    PhysicalProcessorsDetails.Sorted := True;
-    PhysicalProcessorsDetails.Duplicates := dupIgnore;
+    LPhysicalProcessorsDetails := TStringList.Create();
+    LPhysicalProcessorsDetails.Sorted := True;
+    LPhysicalProcessorsDetails.Duplicates := dupIgnore;
     try
       for LJIdx := 0 to System.Pred(System.Length(LLogicalProcessors)) do
       begin
         LogicalProcessor := LLogicalProcessors[LJIdx];
-        PhysicalProcessorsDetails.Add
-          (Format('%d:%d', [LogicalProcessor.PhysicalProcessorNumber,
+        LPhysicalProcessorsDetails.Add
+          (Format('%u:%u', [LogicalProcessor.PhysicalProcessorNumber,
           LogicalProcessor.PhysicalPackageNumber]));
       end;
       // LogicalProcessorCount := System.Length(LLogicalProcessors);
-      Result := PhysicalProcessorsDetails.Count;
+      Result := UInt32(LPhysicalProcessorsDetails.Count);
     finally
-      PhysicalProcessorsDetails.Free;
+      LPhysicalProcessorsDetails.Free;
     end;
   finally
     LProcCpuInfos.Free;
@@ -1147,16 +1141,17 @@ begin
   end;
 end;
 
-class function TNumCPULib.GetLogicalCPUCountSolaris(): Int32;
+class function TNumCPULib.GetLogicalCPUCountSolaris(): UInt32;
 begin
-  Result := sysconf(GetAppropriateSysConfNumber());
+  Result := UInt32(sysconf(GetAppropriateSysConfNumber()));
 end;
 
-class function TNumCPULib.GetPhysicalCPUCountSolaris(): Int32;
+class function TNumCPULib.GetPhysicalCPUCountSolaris(): UInt32;
 var
   LInputParameters, LOuputParameters, LCoreChipIDs: TStringList;
   LLineOutputInfo: String;
-  LIdx, LChipId, LCoreId: Int32;
+  LIdx: Int32;
+  LChipId, LCoreId: UInt32;
 begin
   Result := 0;
 
@@ -1179,17 +1174,17 @@ begin
       LLineOutputInfo := LOuputParameters[LIdx];
       if BeginsWith(LLineOutputInfo, 'chip_id', False) then
       begin
-        LChipId := ParseLastInt32(LLineOutputInfo, 0);
+        LChipId := UInt32(ParseLastInt32(LLineOutputInfo, 0));
       end
       else if (BeginsWith(LLineOutputInfo, 'core_id', False)) then
       begin
-        LCoreId := ParseLastInt32(LLineOutputInfo, 0);
+        LCoreId := UInt32(ParseLastInt32(LLineOutputInfo, 0));
       end;
 
-      LCoreChipIDs.Add(Format('%d:%d', [LCoreId, LChipId]));
+      LCoreChipIDs.Add(Format('%u:%u', [LCoreId, LChipId]));
     end;
 
-    Result := LCoreChipIDs.Count;
+    Result := UInt32(LCoreChipIDs.Count);
 
     // fallback if above method fails, note: the method below only works only for Solaris 10 and above
     if Result < 1 then
@@ -1201,7 +1196,7 @@ begin
       ExecuteAndParseProcessOutput('psrinfo', LInputParameters,
         LOuputParameters);
 
-      Result := StrToIntDef(Trim(LOuputParameters.Text), 0)
+      Result := UInt32(ParseLastInt32(LOuputParameters.Text, 0));
     end;
 
   finally
@@ -1214,84 +1209,50 @@ end;
 // ================================================================//
 {$IFDEF NUMCPULIB_GENERIC_BSD}
 
-class function TNumCPULib.GetLogicalCPUCountGenericBSD(): Int32;
+class function TNumCPULib.GetLogicalCPUCountGenericBSD(): UInt32;
+var
+  LTempRes: Int32;
 begin
-  Result := sysconf(GetAppropriateSysConfNumber());
-  if Result < 1 then
+  LTempRes := sysconf(GetAppropriateSysConfNumber());
+  if LTempRes < 1 then
   begin
     Result := GetLogicalCPUCountUsingSysCtl();
+  end
+  else
+  begin
+    Result := UInt32(LTempRes);
   end;
 end;
 {$ENDIF}
 
-class function TNumCPULib.GetLogicalCPUCount(): Int32;
+class function TNumCPULib.GetLogicalCPUCount(): UInt32;
 begin
 {$IF DEFINED(NUMCPULIB_MSWINDOWS)}
   Result := GetLogicalCPUCountWindows();
-  if Result < 1 then
-  begin
-    raise ENumCPULibException.CreateRes(@SErrorOccuredGettingLogicalCPUCount);
-  end;
-
 {$ELSEIF DEFINED(NUMCPULIB_APPLE)}
   Result := GetLogicalCPUCountApple();
-  if Result < 1 then
-  begin
-    raise ENumCPULibException.CreateRes(@SErrorOccuredGettingLogicalCPUCount);
-  end;
-
 {$ELSEIF DEFINED(NUMCPULIB_LINUX)}
   Result := GetLogicalCPUCountLinux();
-  if Result < 1 then
-  begin
-    raise ENumCPULibException.CreateRes(@SErrorOccuredGettingLogicalCPUCount);
-  end;
-
 {$ELSEIF DEFINED(NUMCPULIB_SOLARIS)}
   Result := GetLogicalCPUCountSolaris();
-  if Result < 1 then
-  begin
-    raise ENumCPULibException.CreateRes(@SErrorOccuredGettingLogicalCPUCount);
-  end;
-
 {$ELSEIF DEFINED(NUMCPULIB_GENERIC_BSD)}
   Result := GetLogicalCPUCountGenericBSD();
-  if Result < 1 then
-  begin
-    raise ENumCPULibException.CreateRes(@SErrorOccuredGettingLogicalCPUCount);
-  end;
 {$ELSE}
   // fallback for other Unsupported Oses
   Result := 1;
 {$IFEND}
 end;
 
-class function TNumCPULib.GetPhysicalCPUCount(): Int32;
+class function TNumCPULib.GetPhysicalCPUCount(): UInt32;
 begin
 {$IF DEFINED(NUMCPULIB_MSWINDOWS)}
   Result := GetPhysicalCPUCountWindows();
-  if Result < 1 then
-  begin
-    raise ENumCPULibException.CreateRes(@SErrorOccuredGettingPhysicalCPUCount);
-  end;
 {$ELSEIF DEFINED(NUMCPULIB_APPLE)}
   Result := GetPhysicalCPUCountApple();
-  if Result < 1 then
-  begin
-    raise ENumCPULibException.CreateRes(@SErrorOccuredGettingPhysicalCPUCount);
-  end;
 {$ELSEIF DEFINED(NUMCPULIB_LINUX)}
   Result := GetPhysicalCPUCountLinux();
-  if Result < 1 then
-  begin
-    raise ENumCPULibException.CreateRes(@SErrorOccuredGettingPhysicalCPUCount);
-  end;
 {$ELSEIF DEFINED(NUMCPULIB_SOLARIS)}
   Result := GetPhysicalCPUCountSolaris();
-  if Result < 1 then
-  begin
-    raise ENumCPULibException.CreateRes(@SErrorOccuredGettingPhysicalCPUCount);
-  end;
 {$ELSE}
   // fallback for other Unsupported Oses
   Result := 1;
