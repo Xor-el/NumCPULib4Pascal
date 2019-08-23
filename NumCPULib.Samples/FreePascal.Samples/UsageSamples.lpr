@@ -8,7 +8,7 @@ program UsageSamples;
 
 uses
   SysUtils,
-  NumCPULib in '..\..\NumCPULib\src\NumCPULib.pas';
+  NumCPULib;
 
 begin
   try
