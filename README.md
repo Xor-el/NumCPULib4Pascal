@@ -3,6 +3,9 @@
 
 Count the number of CPUs (Logical and Physical) on the current machine.
 
+**Build Status**
+[![Build Status](https://travis-ci.com/Xor-el/NumCPULib4Pascal.svg?branch=master)](https://travis-ci.com/Xor-el/NumCPULib4Pascal)
+
 ## Usage
 
 Add `NumCPULib` to uses clause:
