@@ -15,7 +15,7 @@ begin
     { TODO -oUser -cConsole Main : Insert code here }
     WriteLn(Format('Logical CPU Count is %d', [TNumCPULib.GetLogicalCPUCount()]));
     WriteLn(Format('Physical CPU Count is %d', [TNumCPULib.GetPhysicalCPUCount()]));
-    ReadLn;
+    //ReadLn;
   except
     on E: Exception do
       Writeln(E.ClassName, ': ', E.Message);

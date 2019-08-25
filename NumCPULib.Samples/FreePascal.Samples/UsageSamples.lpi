@@ -42,7 +42,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="UsageSamples"/>
+      <Filename Value=".\bin\UsageSamples"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
