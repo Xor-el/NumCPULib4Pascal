@@ -248,10 +248,13 @@ type
 {$ENDIF}
     // ================================================================//
 {$IFDEF NUMCPULIB_HAS_SYSCTL}
+  type
+    TMib = array [0 .. 1] of Int32;
 {$IFDEF NUMCPULIB_APPLE}
     class function GetCPUCountUsingSysCtlByName(const AName: String)
       : UInt32; static;
 {$ENDIF}
+    class function SysCtlInternal(AMib: TMib; out AOut: UInt32): Boolean; static;
     class function GetLogicalCPUCountUsingSysCtl(): UInt32; static;
 {$ENDIF}
     // ================================================================//
@@ -450,6 +453,15 @@ type
 {$ENDIF}
   // ================================================================//
 {$IFDEF NUMCPULIB_GENERIC_BSD}
+   {$IF DEFINED(NETBSD) OR DEFINED(OPENBSD)}
+      {$IF DEFINED(NETBSD)}
+      const
+        HW_NCPUONLINE = 16; // defined in NetBSD >= 7.0
+      {$ELSEIF DEFINED(OPENBSD)}
+      const
+        HW_NCPUONLINE = 25; // defined in OpenBSD >= 6.4
+      {$IFEND}
+   {$IFEND}
   class function GetLogicalCPUCountGenericBSD(): UInt32; static;
 {$ENDIF}
   // ================================================================//
@@ -575,23 +587,48 @@ begin
 end;
 {$ENDIF}
 
-class function TNumCPULib.GetLogicalCPUCountUsingSysCtl(): UInt32;
+class function TNumCPULib.SysCtlInternal(AMib: TMib; out AOut: UInt32): Boolean;
 var
-  LMib: array [0 .. 1] of Int32;
-  LLen: size_t;
+  LSizeOut: size_t;
+  LRet: Int32;
 begin
-  LMib[0] := CTL_HW;
-  LMib[1] := HW_NCPU;
-  LLen := System.SizeOf(Result);
+  LSizeOut := System.SizeOf(AOut);
 {$IFDEF FPC}
 {$IF DEFINED(VER3_0_0) OR DEFINED(VER3_0_2)}
-  fpsysctl(PChar(@LMib), 2, @Result, @LLen, nil, 0);
+  LRet := fpsysctl(PChar(@AMib), System.Length(AMib), @AOut, @LSizeOut, nil, 0);
 {$ELSE}
-  fpsysctl(@LMib, 2, @Result, @LLen, nil, 0);
+  LRet := fpsysctl(@AMib, System.Length(AMib), @AOut, @LSizeOut, nil, 0);
 {$IFEND}
 {$ELSE}
-  sysctl(@LMib, 2, @Result, @LLen, nil, 0);
+  LRet := sysctl(@AMib, System.Length(AMib), @AOut, @LSizeOut, nil, 0);
 {$ENDIF}
+  Result := not(LRet < 0);
+end;
+
+class function TNumCPULib.GetLogicalCPUCountUsingSysCtl(): UInt32;
+var
+  LMib: TMib;
+begin
+  LMib[0] := CTL_HW;
+{$IF DEFINED(NETBSD) OR DEFINED(OPENBSD)}
+  // Try hw.ncpuonline first because hw.ncpu would report a number twice as
+  // high as the actual CPUs running on OpenBSD >= 6.4 with hyperthreading
+  // disabled (hw.smt=0).
+  LMib[1] := HW_NCPUONLINE;
+  if SysCtlInternal(LMib, Result) then
+  begin
+   Exit;
+  end;
+
+  LMib[1] := HW_NCPU;
+  if SysCtlInternal(LMib, Result) then
+  begin
+   Exit;
+  end;
+{$ELSE}
+  LMib[1] := HW_NCPU;
+  SysCtlInternal(LMib, Result);
+{$IFEND}
 end;
 {$ENDIF}
 // ================================================================//

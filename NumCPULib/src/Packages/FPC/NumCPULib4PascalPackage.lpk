@@ -20,7 +20,7 @@
     </CompilerOptions>
     <Description Value="Get the number of Logical and Physical CPUs in Pascal "/>
     <License Value="MIT License"/>
-    <Version Major="1" Minor="3"/>
+    <Version Major="1" Minor="4"/>
     <Files Count="1">
       <Item1>
         <Filename Value="..\..\NumCPULib.pas"/>
