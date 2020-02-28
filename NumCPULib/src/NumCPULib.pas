@@ -66,6 +66,8 @@ unit NumCPULib;
      {$DEFINE NUMCPULIB_LINUX}
   {$ELSEIF DEFINED(SOLARIS)}
      {$DEFINE NUMCPULIB_SOLARIS}
+  {$ELSEIF DEFINED(HAIKU)}
+     {$DEFINE NUMCPULIB_HAIKU}
   {$ELSE}
      {$DEFINE NUMCPULIB_UNDEFINED_UNIX_VARIANTS}
   {$IFEND}
@@ -217,7 +219,6 @@ uses
   Classes,
   StrUtils,
 {$ENDIF} // ENDIF NUMCPULIB_WILL_PARSE_DATA
-
   // ================================================================//
   SysUtils;
 
@@ -465,6 +466,10 @@ type
   class function GetLogicalCPUCountGenericBSD(): UInt32; static;
 {$ENDIF}
   // ================================================================//
+{$IFDEF NUMCPULIB_HAIKU}
+  class function GetLogicalCPUCountHaiku(): UInt32; static;
+{$ENDIF}
+  // ================================================================//
 
   class procedure Boot(); static;
   class constructor NumCPULib();
@@ -485,10 +490,48 @@ type
 
 {$IFDEF NUMCPULIB_HAS_SYSCONF}
 {$IFDEF FPC}
+  function sysconf(i: cint): clong; cdecl; external 'c' name 'sysconf';
+{$ENDIF}
+{$ENDIF}
 
-function sysconf(i: cint): clong; cdecl; external 'c' name 'sysconf';
+{$IFDEF NUMCPULIB_HAIKU}
+  const
+   B_FILE_NAME_LENGTH = 256;
+   B_OS_NAME_LENGTH = 32;
+  type
+   status_t = LongInt;
+   bigtime_t = Int64;
+   PSystemInfo = ^system_info;
+   system_info = record
+     boot_time: bigtime_t; // time of boot (usecs since 1/1/1970)
+     cpu_count: UInt32; // number of cpus
+     max_pages: UInt64;	// total # of accessible pages
+     used_pages: UInt64; // # of accessible pages in use
+     cached_pages: UInt64;
+     block_cache_pages:	UInt64;
+     ignored_pages: UInt64; // # of ignored/inaccessible pages
+     needed_memory: UInt64;
+     free_memory: UInt64;
+     max_swap_pages: UInt64;
+     free_swap_pages: UInt64;
+     page_faults: UInt32; // # of page faults
+     max_sems: UInt32;
+     used_sems: UInt32;
+     max_ports: UInt32;
+     used_ports: UInt32;
+     max_threads: UInt32;
+     used_threads: UInt32;
+     max_teams: UInt32;
+     used_teams: UInt32;
+     kernel_name: array[0 .. B_FILE_NAME_LENGTH - 1] of Byte;
+     kernel_build_date: array[0 .. B_OS_NAME_LENGTH - 1] of Byte;
+     kernel_build_time: array[0 .. B_OS_NAME_LENGTH - 1] of Byte;
+     kernel_version: Int64;
+     abi: UInt32; // the system API
+   end;
+  function get_system_info(info: PSystemInfo): status_t; cdecl; external 'root' name 'get_system_info';
 {$ENDIF}
-{$ENDIF}
+
 
 implementation
 
@@ -1261,6 +1304,18 @@ begin
   end;
 end;
 {$ENDIF}
+// ================================================================//
+{$IFDEF NUMCPULIB_HAIKU}
+
+class function TNumCPULib.GetLogicalCPUCountHaiku(): UInt32;
+var
+  LSystemInfo: system_info;
+begin
+  LSystemInfo := Default(system_info);
+  get_system_info(@LSystemInfo);
+  Result := LSystemInfo.cpu_count;
+end;
+{$ENDIF}
 
 class function TNumCPULib.GetLogicalCPUCount(): UInt32;
 begin
@@ -1274,6 +1329,8 @@ begin
   Result := GetLogicalCPUCountSolaris();
 {$ELSEIF DEFINED(NUMCPULIB_GENERIC_BSD)}
   Result := GetLogicalCPUCountGenericBSD();
+{$ELSEIF DEFINED(NUMCPULIB_HAIKU)}
+  Result := GetLogicalCPUCountHaiku();
 {$ELSE}
   // fallback for other Unsupported Oses
   Result := 1;
