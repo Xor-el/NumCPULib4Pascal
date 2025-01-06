@@ -1,0 +1,7 @@
+{
+    "app" : "NumCPULib.Samples",
+    "lib" : "NumCPULib",
+    "tst" : "Tests.lpi",
+    "pkg" : [
+    ]
+}
