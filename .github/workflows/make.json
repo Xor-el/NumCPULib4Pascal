@@ -1,7 +1,7 @@
 {
-    "app" : "NumCPULib.Samples",
+    "app" : "NumCPULib",
     "lib" : "NumCPULib",
-    "tst" : "Tests.lpi",
+    "tst" : "NumCPULib.Samples/FreePascal.Samples/UsageSamples.lpi",
     "pkg" : [
     ]
 }
