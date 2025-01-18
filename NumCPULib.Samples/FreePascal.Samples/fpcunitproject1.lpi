@@ -53,7 +53,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="fpcunitproject1"/>
+            <Filename Value="bin/fpcunitproject1"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>

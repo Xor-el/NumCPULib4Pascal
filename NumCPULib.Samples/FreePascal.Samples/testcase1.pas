@@ -26,7 +26,7 @@ begin
     AssertEquals('Test Logical CPU Count', StrToInt(Output.Split(LineEnding)[2]), TNumCPULib.GetLogicalCPUCount);
   {$ELSE}
   if RunCommand('grep', ['-c', 'cpu cores', '/proc/cpuinfo'], Output) then
-    AssertEquals('Test Logical CPU Count', StrToInt(Output), TNumCPULib.GetLogicalCPUCount);
+    AssertEquals('Test Logical CPU Count', StrToInt(Output.Replace(LineEnding, '')), TNumCPULib.GetLogicalCPUCount);
   {$ENDIF}
 end;
 
