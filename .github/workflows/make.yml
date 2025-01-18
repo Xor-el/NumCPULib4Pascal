@@ -39,7 +39,7 @@ jobs:
         set -xeuo pipefail
         sudo bash -c 'apt-get update; apt-get install -y lazarus' >/dev/null
         instantfpc -Fu/usr/lib/lazarus/*/components/lazutils \
-          -B .github/workflows/make.pas build
+          .github/workflows/make.pas build
 
     - name: Build on Windows
       if: runner.os == 'Windows'
