@@ -47,8 +47,8 @@ jobs:
       run: |
         $ErrorActionPreference = 'stop'
         Set-PSDebug -Strict
-        (wmic cpu get NumberOfCores).NumberOfCores.Trim()
-        (wmic cpu get NumberOfLogicalProcessors).NumberOfLogicalProcessors.Trim()
+        (wmic cpu get NumberOfCores).NumberOfCores
+        (wmic cpu get NumberOfLogicalProcessors).NumberOfLogicalProcessors
         New-Variable -Option Constant -Name VAR -Value @{
           Uri =
             'https://fossies.org/windows/misc/lazarus-3.6-fpc-3.2.2-win64.exe'
