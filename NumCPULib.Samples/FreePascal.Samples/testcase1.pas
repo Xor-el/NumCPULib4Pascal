@@ -22,7 +22,7 @@ var
   Output: string;
 begin
   {$IFDEF MSWINDOWS}
-  if RunCommand('pwsh', ['-command', '[Environment]::ProccessorCount'], Output) then
+  if RunCommand('pwsh', ['-command', '(Get-WmiObject Win32_Processor).NumberOfLogicalProcessors'], Output) then
     AssertEquals('Test Logical CPU Count', StrToInt(Output), TNumCPULib.GetLogicalCPUCount)
   else
     Fail(Output);
@@ -39,7 +39,7 @@ var
   Output: string;
 begin
   {$IFDEF MSWINDOWS}
-  if RunCommand('pwsh', ['-command', '(wmic cpu get NumberOfCores).NumberOfCores'], Output) then
+  if RunCommand('pwsh', ['-command', '(Get-WmiObject Win32_Processor).NumberOfCores'], Output) then
     AssertEquals('Test Physical CPU Count', StrToInt(Output), TNumCPULib.GetPhysicalCPUCount)
   else
     Fail(Output);
