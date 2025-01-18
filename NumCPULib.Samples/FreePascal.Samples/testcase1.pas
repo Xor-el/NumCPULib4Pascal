@@ -22,13 +22,13 @@ var
   Output: string;
 begin
   {$IFDEF MSWINDOWS}
-  if RunCommand('pwsh', ['-command', '(wmic cpu get NumberOfLogicalProcessors).NumberOfLogicalProcessors.Trim()'], Output) then
+  if RunCommand('pwsh', ['-command', '(wmic cpu get NumberOfLogicalProcessors).NumberOfLogicalProcessors'], Output) then
     AssertEquals('Test Logical CPU Count', StrToInt(Output), TNumCPULib.GetLogicalCPUCount)
   else
     Fail(Output);
   {$ELSE}
   if RunCommand('awk', ['/cpu cores/{count += 1}END{print count}', '/proc/cpuinfo'], Output) then
-    AssertEquals('Test Logical CPU Count', StrToInt(Output), TNumCPULib.GetLogicalCPUCount)
+    AssertEquals('Test Logical CPU Count', StrToInt(Output.Replace(LineEnding, '')), TNumCPULib.GetLogicalCPUCount)
   else
     Fail(Output);
   {$ENDIF}
@@ -39,13 +39,13 @@ var
   Output: string;
 begin
   {$IFDEF MSWINDOWS}
-  if RunCommand('pwsh', ['-command', '(wmic cpu get NumberOfCores).NumberOfCores.Trim()'], Output) then
+  if RunCommand('pwsh', ['-command', '(wmic cpu get NumberOfCores).NumberOfCores'], Output) then
     AssertEquals('Test Physical CPU Count', StrToInt(Output), TNumCPULib.GetPhysicalCPUCount)
   else
     Fail(Output);
   {$ELSE}
   if RunCommand('awk', ['/cpu cores/{count = $4}END{print count}', '/proc/cpuinfo'], Output) then
-    AssertEquals('Physical CPU Count', StrToInt(Output), TNumCPULib.GetPhysicalCPUCount)
+    AssertEquals('Physical CPU Count', StrToInt(Output.Replace(LineEnding, '')), TNumCPULib.GetPhysicalCPUCount)
   else
     Fail(Output);
   {$ENDIF}
