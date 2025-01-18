@@ -58,4 +58,4 @@ jobs:
         $Env:PATH+=';C:\Lazarus\fpc\3.2.2\bin\x86_64-win64'
         (Get-Command 'instantfpc').Source | Out-Host
         instantfpc '-FuC:\Lazarus\components\lazutils' `
-          -B '.github\workflows\make.pas' build
+          '.github\workflows\make.pas' build
