@@ -4,7 +4,7 @@
 Count the number of CPUs (Logical and Physical) on the current machine.
 
 **Build Status**
-[![Build Status](https://travis-ci.com/Xor-el/NumCPULib4Pascal.svg?branch=master)](https://travis-ci.com/Xor-el/NumCPULib4Pascal)
+[![Build Status](https://github.com/Xor-el/NumCPULib4Pascal/actions/workflows/make.yml/badge.svg)](https://github.com/Xor-el/NumCPULib4Pascal/actions/workflows/make.yml)
 
 ## Usage
 
