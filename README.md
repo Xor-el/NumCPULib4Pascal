@@ -1,15 +1,20 @@
-# NumCPULib4Pascal
-
-**CPU detection for Object Pascal**
-
-[![Build Status](https://github.com/Xor-el/NumCPULib4Pascal/actions/workflows/make.yml/badge.svg)](https://github.com/Xor-el/NumCPULib4Pascal/actions/workflows/make.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Xor-el/NumCPULib4Pascal/blob/master/LICENSE)
-[![Delphi](https://img.shields.io/badge/Delphi-2010%2B-red.svg)](https://www.embarcadero.com/products/delphi)
-[![FreePascal 3.0.0+](https://img.shields.io/badge/FreePascal-3.0.0%2B-blue.svg)](https://www.freepascal.org/)
+<p align="center">
+  <img src="assets/branding/logo.svg" width="160" alt="NumCPULib4Pascal logo" />
+  <h1 align="center">NumCPULib4Pascal</h1>
+  <p align="center">
+    <strong>CPU count detection for Object Pascal</strong>
+  </p>
+  <p align="center">
+    <a href="https://github.com/Xor-el/NumCPULib4Pascal/actions/workflows/make.yml"><img src="https://github.com/Xor-el/NumCPULib4Pascal/actions/workflows/make.yml/badge.svg" alt="Build Status"></a>
+    <a href="https://github.com/Xor-el/NumCPULib4Pascal/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+    <a href="https://www.embarcadero.com/products/delphi"><img src="https://img.shields.io/badge/Delphi-2010%2B-red.svg" alt="Delphi"></a>
+    <a href="https://www.freepascal.org/"><img src="https://img.shields.io/badge/FreePascal-3.0.0%2B-blue.svg" alt="FreePascal 3.0.0+"></a>
+  </p>
+</p>
 
 ---
 
-NumCPULib4Pascal is a library for detecting the number of logical and physical CPUs on the current machine in Object Pascal, compatible with both Delphi and FreePascal across multiple operating systems, released under the permissive [MIT License](https://github.com/Xor-el/NumCPULib4Pascal/blob/master/LICENSE).
+NumCPULib4Pascal is a library for detecting the number of logical and physical CPUs on the current machine in Object Pascal, compatible with both Delphi and FreePascal across multiple operating systems, released under the permissive [MIT License](LICENSE).
 
 ## Table of Contents
 
@@ -19,6 +24,7 @@ NumCPULib4Pascal is a library for detecting the number of logical and physical C
 - [Contributing](#contributing)
 - [Tip Jar](#tip-jar)
 - [License](#license)
+- [Branding](assets/branding/README.md)
 
 ## Features
 

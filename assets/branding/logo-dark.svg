@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Dark UI: brighter cores and thread ticks on near black blue badge.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="nctd ncdd">
+  <title id="nctd">NumCPULib4Pascal</title>
+  <desc id="ncdd">SMT pairs mark tuned for dark backgrounds.</desc>
+  <defs>
+    <linearGradient id="numcpubgd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#172554"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="26" fill="url(#numcpubgd)"/>
+  <g transform="translate(-9 0)">
+    <circle cx="44" cy="44" r="11" fill="#334155" stroke="#fde68a" stroke-width="2"/>
+    <path stroke="#67e8f9" stroke-width="2" stroke-linecap="round" d="M 58 40 L 70 40 M 58 48 L 70 48"/>
+    <circle cx="44" cy="84" r="11" fill="#334155" stroke="#fde68a" stroke-width="2"/>
+    <path stroke="#67e8f9" stroke-width="2" stroke-linecap="round" d="M 58 80 L 70 80 M 58 88 L 70 88"/>
+    <circle cx="84" cy="44" r="11" fill="#334155" stroke="#fde68a" stroke-width="2"/>
+    <path stroke="#67e8f9" stroke-width="2" stroke-linecap="round" d="M 98 40 L 110 40 M 98 48 L 110 48"/>
+    <circle cx="84" cy="84" r="11" fill="#334155" stroke="#fde68a" stroke-width="2"/>
+    <path stroke="#67e8f9" stroke-width="2" stroke-linecap="round" d="M 98 80 L 110 80 M 98 88 L 110 88"/>
+  </g>
+</svg>

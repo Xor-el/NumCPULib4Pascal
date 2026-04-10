@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Official mark: SMT pairs. Four core disks with paired logical thread ticks.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="nct ncd">
+  <title id="nct">NumCPULib4Pascal</title>
+  <desc id="ncd">Badge with four physical cores and cyan thread pairs for logical CPUs.</desc>
+  <defs>
+    <linearGradient id="numcpubg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="26" fill="url(#numcpubg)"/>
+  <g transform="translate(-9 0)">
+    <circle cx="44" cy="44" r="11" fill="#1e293b" stroke="#fbbf24" stroke-width="2"/>
+    <path stroke="#22d3ee" stroke-width="2" stroke-linecap="round" d="M 58 40 L 70 40 M 58 48 L 70 48"/>
+    <circle cx="44" cy="84" r="11" fill="#1e293b" stroke="#fbbf24" stroke-width="2"/>
+    <path stroke="#22d3ee" stroke-width="2" stroke-linecap="round" d="M 58 80 L 70 80 M 58 88 L 70 88"/>
+    <circle cx="84" cy="44" r="11" fill="#1e293b" stroke="#fbbf24" stroke-width="2"/>
+    <path stroke="#22d3ee" stroke-width="2" stroke-linecap="round" d="M 98 40 L 110 40 M 98 48 L 110 48"/>
+    <circle cx="84" cy="84" r="11" fill="#1e293b" stroke="#fbbf24" stroke-width="2"/>
+    <path stroke="#22d3ee" stroke-width="2" stroke-linecap="round" d="M 98 80 L 110 80 M 98 88 L 110 88"/>
+  </g>
+</svg>
