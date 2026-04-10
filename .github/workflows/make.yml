@@ -1,9 +1,8 @@
----
 name: Make
 
 on:
   schedule:
-    - cron:  '0 0 1 * *'
+    - cron: '0 0 1 * *'
   push:
     branches:
       - "**"
@@ -21,43 +20,74 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
+          - ubuntu-24.04-arm
           - windows-latest
+          - macos-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        submodules: true
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: true
 
-    - name: Build on Linux
-      if: runner.os == 'Linux'
-      shell: bash
-      run: |
-        set -xeuo pipefail
-        sudo bash -c 'apt-get update; apt-get install -y lazarus' >/dev/null
-        instantfpc -Fu/usr/lib/lazarus/*/components/lazutils \
-          -B '.github/workflows/make.pas'
+      # ─── Linux (unified for x86_64 and AArch64) ────────────────────────
+      - name: Build on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -xeuo pipefail
+          sudo bash -c 'apt-get update; apt-get install -y lazarus' >/dev/null
+          fpc -iV
+          instantfpc .github/workflows/make.pas
 
-    - name: Build on Windows
-      if: runner.os == 'Windows'
-      shell: powershell
-      run: |
-        $ErrorActionPreference = 'stop'
-        Set-PSDebug -Strict
-        New-Variable -Option Constant -Name VAR -Value @{
-          Uri =
-            'https://fossies.org/windows/misc/lazarus-3.8-fpc-3.2.2-win64.exe'
-          OutFile = (New-TemporaryFile).FullName + '.exe'
-        }
-        Invoke-WebRequest @VAR
-        & $VAR.OutFile.Replace('Temp', 'Temp\.') /SP- /VERYSILENT /NORESTART `
-          /SUPPRESSMSGBOXES | Out-Null
-        $Env:PATH+=';C:\Lazarus'
-        (Get-Command 'lazbuild').Source | Out-Host
-        $Env:PATH+=';C:\Lazarus\fpc\3.2.2\bin\x86_64-win64'
-        (Get-Command 'instantfpc').Source | Out-Host
-        instantfpc -FuC:\Lazarus\components\lazutils `
-          -B '.github/workflows/make.pas'
+      # ─── macOS ──────────────────────────────────────────────────────────
+      - name: Install Lazarus on macOS
+        if: runner.os == 'macOS'
+        uses: gcarreno/setup-lazarus@v3
+        with:
+          lazarus-version: stable
+          with-cache: false
+
+      - name: Build on macOS
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -xeuo pipefail
+          fpc -iV
+          instantfpc .github/workflows/make.pas
+
+      # ─── Windows ────────────────────────────────────────────────────────
+      - name: Build on Windows
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-PSDebug -Strict
+
+          Write-Host "Installing Lazarus and OpenSSL 1.1 via Chocolatey..."
+          choco install lazarus -y --no-progress
+          choco install openssl.light --version=1.1.1.20181020 -y --no-progress
+
+          # Discover FPC bin path dynamically
+          $fpcDir = Get-ChildItem 'C:\Lazarus\fpc' -Directory | Select-Object -First 1
+          $env:Path += ";C:\Lazarus;$($fpcDir.FullName)\bin\x86_64-win64"
+
+          # Add OpenSSL to PATH (check known locations)
+          $opensslPaths = @(
+            'C:\ProgramData\chocolatey\lib\openssl.light\tools',
+            'C:\Program Files\OpenSSL\bin',
+            'C:\Program Files\OpenSSL-Win64\bin'
+          )
+          foreach ($p in $opensslPaths) {
+            if (Test-Path $p) { $env:Path += ";$p" }
+          }
+
+          Write-Host "FPC version:"
+          fpc -iV
+
+          Write-Host "Building make.pas..."
+          instantfpc .github/workflows/make.pas
